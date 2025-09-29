@@ -1,4 +1,5 @@
-﻿using PeopleManager.Model;
+﻿using Microsoft.EntityFrameworkCore;
+using PeopleManager.Model;
 using PeopleManager.Repository;
 
 namespace PeopleManager.Services
@@ -12,19 +13,19 @@ namespace PeopleManager.Services
             _dbContext = dbContext;
         }
 
-        public IList<Function> Find()
+        public async Task<IList<Function>> Get()
         {
-            var functions = _dbContext.Functions.ToList();
+            var functions = await _dbContext.Functions.ToListAsync();
             return functions;
         }
 
-        public Function? Get(int id)
+        public async Task<Function?> GetById(int id)
         {
-            var function = _dbContext.Functions.FirstOrDefault(f => f.Id == id);
+            var function = await _dbContext.Functions.FirstOrDefaultAsync(f => f.Id == id);
             return function;
         }
 
-        public Function? Create(Function function)
+        public async Task<Function?> Create(Function function)
         {
             if (string.IsNullOrWhiteSpace(function.Name))
             {
@@ -33,14 +34,14 @@ namespace PeopleManager.Services
 
             _dbContext.Functions.Add(function);
 
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
 
             return function;
         }
 
-        public Function? Update(int id, Function function)
+        public async Task<Function?> Update(int id, Function function)
         {
-            var dbFunction = Get(id);
+            var dbFunction = await GetById(id);
 
             if (dbFunction == null)
             {
@@ -50,14 +51,14 @@ namespace PeopleManager.Services
             dbFunction.Name = function.Name;
             dbFunction.Description = function.Description;
             
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
 
             return dbFunction;
         }
 
-        public void Delete(int id)
+        public async Task Delete(int id)
         {
-            var function = Get(id);
+            var function = await GetById(id);
 
             if (function is null)
             {
@@ -68,7 +69,7 @@ namespace PeopleManager.Services
 
             _dbContext.Functions.Remove(function);
 
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

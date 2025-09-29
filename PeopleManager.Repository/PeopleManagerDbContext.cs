@@ -10,7 +10,7 @@ namespace PeopleManager.Repository
         public DbSet<Function> Functions => Set<Function>();
         public DbSet<Person> People => Set<Person>();
         
-        public void Seed()
+        public async void Seed()
         {
             AddDefaultIdentityUser();
 
@@ -34,7 +34,7 @@ namespace PeopleManager.Repository
                     new Person { FirstName = "Peter", LastName = "Taylor", Email = "peter.taylor@example.com" }
                 });
 
-            SaveChanges();
+            await SaveChangesAsync();
         }
 
         private void AddDefaultIdentityUser()
