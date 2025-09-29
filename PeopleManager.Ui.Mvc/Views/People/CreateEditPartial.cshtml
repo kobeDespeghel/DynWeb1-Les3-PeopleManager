@@ -1,0 +1,34 @@
+﻿@model Person
+ 
+@{
+    var functions = (IList<Function>)ViewBag.Functions;
+}
+
+<div asp-validation-summary="ModelOnly"></div>
+
+<div class="mb-3">
+    <label asp-for="FirstName" class="form-label"></label>
+    <input asp-for="FirstName" class="form-control">
+    <span asp-validation-for="FirstName"></span>
+</div>
+<div class="mb-3">
+    <label asp-for="LastName" class="form-label"></label>
+    <input asp-for="LastName" class="form-control">
+    <span asp-validation-for="LastName"></span>
+</div>
+<div class="mb-3">
+    <label asp-for="Email" class="form-label"></label>
+    <input asp-for="Email" class="form-control">
+    <span asp-validation-for="Email"></span>
+</div>
+<div class="mb-3">
+    <label asp-for="FunctionId" class="form-label">Function</label>
+    <select asp-for="FunctionId" class="form-control">
+        <option value="">No Function</option>
+        @foreach (var function in functions)
+        {
+            <option value="@function.Id">@function.Name</option>
+        }
+    </select>
+    <span asp-validation-for="FunctionId"></span>
+</div>

@@ -1,0 +1,22 @@
+﻿@using System.Web
+@using PeopleManager.Ui.Mvc.Extensions
+@model Function
+
+<tr>
+    <td>@Model.Name</td>
+    <td>@Model.Description?.Truncate()</td>
+    <td>
+        <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+        <a class="btn btn-danger" asp-action="Delete" asp-route-id="@Model.Id">Delete</a>
+        <!-- Button trigger modal -->
+        <button type="button" 
+                class="btn btn-danger" 
+                data-bs-toggle="modal" 
+                data-bs-target="#deleteModal"
+                data-id="@Model.Id"
+                data-type="deleteButton"
+                data-name="@HttpUtility.HtmlAttributeEncode(Model.Name)">
+            Delete with modal
+        </button>
+    </td>
+</tr>

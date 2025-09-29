@@ -1,0 +1,14 @@
+﻿@model Function
+
+@{
+    ViewBag.Title = "Delete Function";
+}
+
+<h1>@ViewBag.Title</h1>
+
+<form method="post">
+    <p>Are you sure you want to delete function "@Model.Name"?</p>
+    
+    <a class="btn btn-primary" asp-action="Index">No</a>
+    <button type="submit" class="btn btn-danger">Yes</button>
+</form>
