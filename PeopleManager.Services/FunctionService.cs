@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PeopleManager.Dto.Requests;
+using PeopleManager.Dto.Results;
 using PeopleManager.Model;
 using PeopleManager.Repository;
 
@@ -13,59 +15,97 @@ namespace PeopleManager.Services
             _dbContext = dbContext;
         }
 
-        public async Task<IList<Function>> Get()
+        public async Task<IList<FunctionResult>> Get()
         {
-            var functions = await _dbContext.Functions.ToListAsync();
+            //var functions = await _dbContext.Functions
+            //    .Select(f => new FunctionResult
+            //    {
+            //        Id = f.Id,
+            //        Name = f.Name,
+            //        Description = f.Description,
+            //        NumberOfPeople = f.People.Count
+            //    })
+            //    .ToListAsync();
+            var query = _dbContext.Functions
+                .Select(f => new FunctionResult
+                {
+                    Id = f.Id,
+                    Name = f.Name,
+                    Description = f.Description,
+                    NumberOfPeople = f.People.Count
+                });
+            var functions = await query.ToListAsync();
             return functions;
         }
 
-        public async Task<Function?> GetById(int id)
+        public async Task<FunctionResult?> GetById(int id)
         {
-            var function = await _dbContext.Functions.FirstOrDefaultAsync(f => f.Id == id);
+            var function = await _dbContext.Functions
+                //same as above = reeaal baadman
+                .Select(f => new FunctionResult
+                {
+                    Id = f.Id,
+                    Name = f.Name,
+                    Description = f.Description,
+                    NumberOfPeople = f.People.Count
+                })
+                .FirstOrDefaultAsync(f => f.Id == id);
             return function;
         }
 
-        public async Task<Function?> Create(Function function)
+        public async Task<FunctionResult?> Create(FunctionRequest request)
         {
-            if (string.IsNullOrWhiteSpace(function.Name))
+            if (string.IsNullOrWhiteSpace(request.Name))
             {
                 return null;
             }
 
-            _dbContext.Functions.Add(function);
+            var newFunction = new Function
+            {
+                Name = request.Name,
+                Description = request.Description
+            };
+
+            _dbContext.Functions
+                .Add(newFunction);
 
             await _dbContext.SaveChangesAsync();
 
-            return function;
+            return await GetById(newFunction.Id);
         }
 
-        public async Task<Function?> Update(int id, Function function)
+        public async Task<FunctionResult?> Update(int id, FunctionRequest request)
         {
-            var dbFunction = await GetById(id);
+            //instead of get to keep the link with the dbcontext
+            var function = await _dbContext.Functions
+                .FirstOrDefaultAsync(f => f.Id == id);
 
-            if (dbFunction == null)
+            if (function == null)
             {
                 return null;
             }
 
-            dbFunction.Name = function.Name;
-            dbFunction.Description = function.Description;
+            function.Name = request.Name;
+            function.Description = request.Description;
             
             await _dbContext.SaveChangesAsync();
 
-            return dbFunction;
+            return await GetById(function.Id);
         }
 
         public async Task Delete(int id)
         {
-            var function = await GetById(id);
+            var function = await _dbContext.Functions
+                .FirstOrDefaultAsync(f => f.Id == id);
+
+            //shortcut if you don't want to do a call to the db first
+            //var function = new Function { Id = id, Name = string.Empty };
+            //_dbContext.Functions.Attach(function);
 
             if (function is null)
             {
                 return;
             }
-            //var function = new Function { Id = id, Name = string.Empty };
-            //_dbContext.Functions.Attach(function);
 
             _dbContext.Functions.Remove(function);
 
