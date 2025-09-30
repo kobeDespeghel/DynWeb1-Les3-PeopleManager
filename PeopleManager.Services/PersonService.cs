@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PeopleManager.Dto.Requests;
+using PeopleManager.Dto.Results;
 using PeopleManager.Model;
 using PeopleManager.Repository;
 
@@ -13,70 +15,106 @@ namespace PeopleManager.Services
             _dbContext = dbContext;
         }
 
-        public async Task<IList<Person>> Get()
+        public async Task<IList<PersonResult>> Get()
         {
             var people = await _dbContext.People
                 .Include(p => p.Function)
+                .Select(p => new PersonResult
+                {
+                    Id = p.Id,
+                    FirstName = p.FirstName,
+                    LastName = p.LastName,
+                    Email = p.Email,
+                    Function = p.Function == null ? null : new FunctionResult
+                    {
+                        Id = p.Function.Id,
+                        Name = p.Function.Name,
+                    }
+                })
                 .ToListAsync();
             return people;
         }
 
-        public async Task<Person?> GetById(int id)
+        public async Task<PersonResult?> GetById(int id)
         {
             var person = await _dbContext.People
                 .Include(p => p.Function)
+                .Select(p => new PersonResult
+                {
+                    Id = p.Id,
+                    FirstName = p.FirstName,
+                    LastName = p.LastName,
+                    Email = p.Email,
+                    Function = p.Function == null ? null : new FunctionResult
+                    {
+                        Id = p.Function.Id,
+                        Name = p.Function.Name,
+                        Description = p.Function.Description
+                    }
+                })
                 .FirstOrDefaultAsync(p => p.Id == id);
             return person;
         }
 
-        public async Task<Person?> Create(Person person)
+        public async Task<PersonResult?> Create(PersonRequest request)
         {
-            if (string.IsNullOrWhiteSpace(person.FirstName))
+            if (string.IsNullOrWhiteSpace(request.FirstName))
             {
                 return null;
             }
-            if (string.IsNullOrWhiteSpace(person.LastName))
+            if (string.IsNullOrWhiteSpace(request.LastName))
             {
                 return null;
             }
 
-            _dbContext.People.Add(person);
+            var newPerson = new Person
+            {
+               FirstName = request.FirstName,
+                LastName = request.LastName,
+                Email = request.Email,
+                FunctionId = request.FunctionId
+            };
+
+            _dbContext.People.Add(newPerson);
 
             await _dbContext.SaveChangesAsync();
 
-            return person;
+            return await GetById(newPerson.Id);
         }
 
 
-        public async Task<Person?> Update(int id, Person person)
+        public async Task<PersonResult?> Update(int id, PersonRequest request)
         {
-            var dbPerson = await GetById(id);
+            var person = await _dbContext.People
+                .FirstOrDefaultAsync(p => p.Id == id);
 
-            if (dbPerson == null)
+            if (person == null)
             {
                 return null;
             }
 
-            dbPerson.FirstName = person.FirstName;
-            dbPerson.LastName = person.LastName;
-            dbPerson.Email = person.Email;
-            dbPerson.FunctionId = person.FunctionId;
+            person.FirstName = request.FirstName;
+            person.LastName = request.LastName;
+            person.Email = request.Email;
+            person.FunctionId = request.FunctionId;
 
             await _dbContext.SaveChangesAsync();
 
-            return dbPerson;
+            return await GetById(person.Id);
         }
 
         public async Task Delete(int id)
         {
-            var person = await GetById(id);
+            var person = await _dbContext.People
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            //var person = new Person { Id = id, FirstName = string.Empty, LastName = string.Empty };
+            //_dbContext.People.Attach(person);
 
             if (person is null)
             {
                 return;
             }
-            //var person = new Person { Id = id, FirstName = string.Empty, LastName = string.Empty };
-            //_dbContext.People.Attach(person);
 
             _dbContext.People.Remove(person);
 
