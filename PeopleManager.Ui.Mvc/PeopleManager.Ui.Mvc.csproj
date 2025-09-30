@@ -14,7 +14,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PeopleManager.Services\PeopleManager.Services.csproj" />
+    <ProjectReference Include="..\PeopleManager.Dto\PeopleManager.Dto.csproj" />
+    <ProjectReference Include="..\PeopleManager.Sdk\PeopleManager.Sdk.csproj" />
   </ItemGroup>
 
 </Project>

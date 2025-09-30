@@ -1,44 +1,42 @@
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PeopleManager.Model;
-using PeopleManager.Services;
+using PeopleManager.Dto.Requests;
+using PeopleManager.Sdk;
 
 namespace PeopleManager.Ui.Mvc.Controllers;
 
 [Authorize]
 public class PeopleController : Controller
 {
-    private readonly PersonService _personService;
-    private readonly FunctionService _functionService;
+    private readonly PeopleSdk _peopleSdk;
 
-    public PeopleController(PersonService personService, FunctionService functionService)
+    public PeopleController(PeopleSdk peopleSdk)
     {
-        _personService = personService;
-        _functionService = functionService;
+        _peopleSdk = peopleSdk;
     }
 
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        var people = await _personService.Get();
+        var people = await _peopleSdk.Get();
         return View(people);
     }
 
     [HttpGet]
     public IActionResult Create()
     {
-        return CreateView("Create");
+        return View();
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(Person person)
+    public async Task<IActionResult> Create(PersonRequest request)
     {
         if (!ModelState.IsValid)
         {
-            return CreateView("Create", person);
+            return View(request);
         }
-        await _personService.Create(person);
+        await _peopleSdk.Create(request);
 
         return RedirectToAction("Index");
     }
@@ -46,24 +44,24 @@ public class PeopleController : Controller
     [HttpGet]
     public async Task<IActionResult> Edit([FromRoute] int id)
     {
-        var person = await _personService.GetById(id);
+        var person = await _peopleSdk.GetById(id);
         if (person is null)
         {
             return RedirectToAction("Index");
         }
 
-        return CreateView("Edit", person);
+        return View(person);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Edit([FromRoute] int id, [FromForm] Person person)
+    public async Task<IActionResult> Edit([FromRoute] int id, [FromForm] PersonRequest request)
     {
         if (!ModelState.IsValid)
         {
-            return CreateView("Edit", person);
+            return View(request);
         }
 
-        await _personService.Update(id, person);
+        await _peopleSdk.Update(id, request);
 
         return RedirectToAction("Index");
     }
@@ -73,7 +71,7 @@ public class PeopleController : Controller
     [HttpGet]
     public async Task<IActionResult> Delete([FromRoute] int id)
     {
-        var person = await _personService.GetById(id);
+        var person = await _peopleSdk.GetById(id);
         if (person is null)
         {
             return RedirectToAction("Index");
@@ -85,13 +83,13 @@ public class PeopleController : Controller
     [Route("[controller]/Delete/{id:int?}")]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
-        await _personService.Delete(id);
+        await _peopleSdk.Delete(id);
 
         return RedirectToAction("Index");
     }
 
 
-    private async Task<IActionResult> CreateView([AspMvcView] string viewName, Person? person = null)
+    private async Task<IActionResult> CreateView([AspMvcView] string viewName, PersonRequest? person = null)
     {
         var functions = await _functionService.Get();
         ViewBag.Functions = functions;

@@ -1,38 +1,43 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using PeopleManager.Repository;
-using PeopleManager.Services;
+using PeopleManager.Sdk;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddHttpClient<PeopleSdk>("PeopleManagerApi", (provider, client) =>
+{
+    client.BaseAddress = new Uri("https://localhost:7188/");
+});
+
+
 //var connectionString = builder.Configuration.GetConnectionString(nameof(PeopleManagerDbContext));
 
-builder.Services.AddDbContext<PeopleManagerDbContext>(options =>
-{
-    options.UseInMemoryDatabase(nameof(PeopleManagerDbContext));
-    //options.UseSqlServer(connectionString);
-});
+//builder.Services.AddDbContext<PeopleManagerDbContext>(options =>
+//{
+//    options.UseInMemoryDatabase(nameof(PeopleManagerDbContext));
+//    //options.UseSqlServer(connectionString);
+//});
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options =>
-    {
-        //options.SignIn.RequireConfirmedAccount = true;
-    })
-    .AddEntityFrameworkStores<PeopleManagerDbContext>();
+//builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+//    {
+//        //options.SignIn.RequireConfirmedAccount = true;
+//    })
+//    .AddEntityFrameworkStores<PeopleManagerDbContext>();
 
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    options.Cookie.HttpOnly = true;
-    options.LoginPath = "/Identity/SignIn";
-    options.AccessDeniedPath = "/Identity/SignIn";
-    options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
-    options.SlidingExpiration = true;
-});
+//builder.Services.ConfigureApplicationCookie(options =>
+//{
+//    options.Cookie.HttpOnly = true;
+//    options.LoginPath = "/Identity/SignIn";
+//    options.AccessDeniedPath = "/Identity/SignIn";
+//    options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+//    options.SlidingExpiration = true;
+//});
 
-builder.Services.AddScoped<FunctionService>();
-builder.Services.AddScoped<PersonService>();
+//builder.Services.AddScoped<FunctionService>();
+//builder.Services.AddScoped<PersonService>();
 
 var app = builder.Build();
 
@@ -43,16 +48,16 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-else
-{
-    using var scope = app.Services.CreateScope();
+//else
+//{
+//    using var scope = app.Services.CreateScope();
 
-    var dbContext = scope.ServiceProvider.GetRequiredService<PeopleManagerDbContext>();
-    if (dbContext.Database.IsInMemory())
-    {
-        dbContext.Seed();
-    }
-}
+//    var dbContext = scope.ServiceProvider.GetRequiredService<PeopleManagerDbContext>();
+//    if (dbContext.Database.IsInMemory())
+//    {
+//        dbContext.Seed();
+//    }
+//}
 
 app.UseHttpsRedirection();
 app.UseRouting();

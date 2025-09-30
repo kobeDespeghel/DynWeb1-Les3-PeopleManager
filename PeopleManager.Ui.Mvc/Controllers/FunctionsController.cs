@@ -1,18 +1,19 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PeopleManager.Model;
-using PeopleManager.Services;
+using PeopleManager.Dto.Requests;
+//using PeopleManager.Model;
+//using PeopleManager.Services;
 
 namespace PeopleManager.Ui.Mvc.Controllers
 {
     [Authorize]
     public class FunctionsController : Controller
     {
-        private readonly FunctionService _functionService;
+        //private readonly FunctionService _functionService;
 
-        public FunctionsController(FunctionService functionService)
+        public FunctionsController()
         {
-            _functionService = functionService;
+            //_functionService = functionService;
         }
 
         public async Task<IActionResult> Index()
@@ -28,7 +29,7 @@ namespace PeopleManager.Ui.Mvc.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Function function)
+        public async Task<IActionResult> Create(FunctionRequest function)
         {
             if (!ModelState.IsValid)
             {
@@ -52,7 +53,7 @@ namespace PeopleManager.Ui.Mvc.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit([FromRoute]int id, [FromForm]Function function)
+        public async Task<IActionResult> Edit([FromRoute]int id, [FromForm]FunctionRequest function)
         {
             if (!ModelState.IsValid)
             {
