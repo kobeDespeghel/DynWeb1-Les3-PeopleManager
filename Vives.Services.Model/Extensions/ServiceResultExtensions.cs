@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Vives.Services.Model.Extensions
+﻿namespace Vives.Services.Model.Extensions
 {
     public static class ServiceResultExtensions
     {

@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace Vives.Services.Model
 {
-    public class ServiceResult<T>: ServiceResult
+    public class ServiceResult<TData>: ServiceResult
     {
-        public ServiceResult(T? data = default)
+        public ServiceResult(TData? data = default)
         {
-            data = data;
+            Data = data;
         }
-        public T? Data { get; set; }
+        public TData? Data { get; set; }
     }
 }

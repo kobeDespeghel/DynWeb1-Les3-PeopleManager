@@ -3,6 +3,8 @@ using PeopleManager.Dto.Requests;
 using PeopleManager.Dto.Results;
 using PeopleManager.Model;
 using PeopleManager.Repository;
+using Vives.Services.Model;
+using Vives.Services.Model.Extensions;
 
 namespace PeopleManager.Services
 {
@@ -15,7 +17,7 @@ namespace PeopleManager.Services
             _dbContext = dbContext;
         }
 
-        public async Task<IList<PersonResult>> Get()
+        public async Task<ServiceResult<IList<PersonResult>>> Get()
         {
             var people = await _dbContext.People
                 .Include(p => p.Function)
@@ -29,10 +31,14 @@ namespace PeopleManager.Services
                     FunctionName = p.Function == null ? null : p.Function.Name,
                 })
                 .ToListAsync();
-            return people;
+            //return people;
+            return new ServiceResult<IList<PersonResult>>()
+            {
+                Data = people
+            };
         }
 
-        public async Task<PersonResult?> GetById(int id)
+        public async Task<ServiceResult<PersonResult?>> GetById(int id)
         {
             var person = await _dbContext.People
                 .Include(p => p.Function)
@@ -46,18 +52,28 @@ namespace PeopleManager.Services
                     FunctionName = p.Function == null ? null : p.Function.Name,
                 })
                 .FirstOrDefaultAsync(p => p.Id == id);
-            return person;
+
+            if(person == null)
+            {
+                return new ServiceResult<PersonResult?>().NotFound(entityName: "Person");
+            }
+
+            //return person;
+            return new ServiceResult<PersonResult?>()
+            {
+                Data = person
+            };
         }
 
-        public async Task<PersonResult?> Create(PersonRequest request)
+        public async Task<ServiceResult<PersonResult?>> Create(PersonRequest request)
         {
             if (string.IsNullOrWhiteSpace(request.FirstName))
             {
-                return null;
+                return new ServiceResult<PersonResult?>().Required(nameof(request.FirstName));
             }
             if (string.IsNullOrWhiteSpace(request.LastName))
             {
-                return null;
+                return new ServiceResult<PersonResult?>().Required(nameof(request.LastName));
             }
 
             var newPerson = new Person
@@ -76,14 +92,14 @@ namespace PeopleManager.Services
         }
 
 
-        public async Task<PersonResult?> Update(int id, PersonRequest request)
+        public async Task<ServiceResult<PersonResult?>> Update(int id, PersonRequest request)
         {
             var person = await _dbContext.People
                 .FirstOrDefaultAsync(p => p.Id == id);
 
             if (person == null)
             {
-                return null;
+                return new ServiceResult<PersonResult?>().NotFound(entityName: "Person");
             }
 
             person.FirstName = request.FirstName;
@@ -96,7 +112,7 @@ namespace PeopleManager.Services
             return await GetById(person.Id);
         }
 
-        public async Task Delete(int id)
+        public async Task<ServiceResult> Delete(int id)
         {
             var person = await _dbContext.People
                 .FirstOrDefaultAsync(p => p.Id == id);
@@ -106,12 +122,13 @@ namespace PeopleManager.Services
 
             if (person is null)
             {
-                return;
+                return new ServiceResult().AlreadyRemoved();
             }
 
             _dbContext.People.Remove(person);
 
             await _dbContext.SaveChangesAsync();
+            return new ServiceResult();
         }
     }
 }
