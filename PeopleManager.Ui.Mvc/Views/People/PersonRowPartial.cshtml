@@ -14,9 +14,9 @@
         }
     </td>
     <td>
-        @if (Model.Function is not null)
+        @if (!String.IsNullOrWhiteSpace(Model.FunctionName))
         {
-            <span class="badge text-bg-primary">@Model.Function.Name</span>
+            <span class="badge text-bg-primary">@Model.FunctionName</span>
         }
         else
         {

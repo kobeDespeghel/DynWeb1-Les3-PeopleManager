@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using PeopleManager.Sdk;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +6,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddHttpClient<PeopleSdk>("PeopleManagerApi", (provider, client) =>
+{
+    client.BaseAddress = new Uri("https://localhost:7188/");
+});
+
+builder.Services.AddHttpClient<FunctionsSdk>("PeopleManagerApi", (provider, client) =>
 {
     client.BaseAddress = new Uri("https://localhost:7188/");
 });
@@ -62,8 +65,8 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
-app.UseAuthentication();
-app.UseAuthorization();
+//app.UseAuthentication();
+//app.UseAuthorization();
 
 app.MapStaticAssets();
 

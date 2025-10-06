@@ -13,6 +13,7 @@ namespace PeopleManager.Dto.Results
         public required string FirstName { get; set; }
         public required string LastName { get; set; }
         public string? Email { get; set; }
-        public FunctionResult? Function { get; set; }
+        public int? FunctionId { get; set; }
+        public string? FunctionName { get; set; }
     }
 }

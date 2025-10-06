@@ -6,14 +6,16 @@ using PeopleManager.Sdk;
 
 namespace PeopleManager.Ui.Mvc.Controllers;
 
-[Authorize]
+//[Authorize]
 public class PeopleController : Controller
 {
     private readonly PeopleSdk _peopleSdk;
+    private readonly FunctionsSdk _functionsSdk;
 
-    public PeopleController(PeopleSdk peopleSdk)
+    public PeopleController(PeopleSdk peopleSdk, FunctionsSdk functionsSdk)
     {
         _peopleSdk = peopleSdk;
+        _functionsSdk = functionsSdk;
     }
 
     [HttpGet]
@@ -24,9 +26,9 @@ public class PeopleController : Controller
     }
 
     [HttpGet]
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
-        return View();
+        return await CreateView("Create");
     }
 
     [HttpPost]
@@ -34,7 +36,7 @@ public class PeopleController : Controller
     {
         if (!ModelState.IsValid)
         {
-            return View(request);
+            return await CreateView("Create", request);
         }
         await _peopleSdk.Create(request);
 
@@ -50,7 +52,15 @@ public class PeopleController : Controller
             return RedirectToAction("Index");
         }
 
-        return View(person);
+        var request = new PersonRequest
+        {
+            FirstName = person.FirstName,
+            LastName = person.LastName,
+            Email = person.Email,
+            FunctionId = person.FunctionId,
+        };
+
+        return await CreateView("Edit", request);
     }
 
     [HttpPost]
@@ -58,7 +68,7 @@ public class PeopleController : Controller
     {
         if (!ModelState.IsValid)
         {
-            return View(request);
+            return await CreateView("Edit", request);
         }
 
         await _peopleSdk.Update(id, request);
@@ -89,16 +99,16 @@ public class PeopleController : Controller
     }
 
 
-    private async Task<IActionResult> CreateView([AspMvcView] string viewName, PersonRequest? person = null)
+    private async Task<IActionResult> CreateView([AspMvcView] string viewName, PersonRequest? request = null)
     {
-        var functions = await _functionService.Get();
+        var functions = await _functionsSdk.Get();
         ViewBag.Functions = functions;
 
-        if (person is null)
+        if (request is null)
         {
             return View(viewName);
         }
-        return View(viewName, person);
+        return View(viewName, request);
     }
 
 }

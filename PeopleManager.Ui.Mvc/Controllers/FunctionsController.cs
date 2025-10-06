@@ -1,24 +1,25 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PeopleManager.Dto.Requests;
+using PeopleManager.Sdk;
 //using PeopleManager.Model;
 //using PeopleManager.Services;
 
 namespace PeopleManager.Ui.Mvc.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class FunctionsController : Controller
     {
-        //private readonly FunctionService _functionService;
+        private readonly FunctionsSdk _functionsSdk;
 
-        public FunctionsController()
+        public FunctionsController(FunctionsSdk functionsSdk)
         {
-            //_functionService = functionService;
+            _functionsSdk = functionsSdk;
         }
 
         public async Task<IActionResult> Index()
         {
-            var functions = await _functionService.Get();
+            var functions = await _functionsSdk.Get();
             return View(functions);
         }
 
@@ -36,7 +37,7 @@ namespace PeopleManager.Ui.Mvc.Controllers
                 return View(function);
             }
 
-            await _functionService.Create(function);
+            await _functionsSdk.Create(function);
 
             return RedirectToAction("Index");
         }
@@ -44,7 +45,7 @@ namespace PeopleManager.Ui.Mvc.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit([FromRoute] int id)
         {
-            var function = await _functionService.GetById(id);
+            var function = await _functionsSdk.GetById(id);
             if (function is null)
             {
                 return RedirectToAction("Index");
@@ -60,7 +61,7 @@ namespace PeopleManager.Ui.Mvc.Controllers
                 return View(function);
             }
 
-            await _functionService.Update(id, function);
+            await _functionsSdk.Update(id, function);
 
             return RedirectToAction("Index");
         }
@@ -68,7 +69,7 @@ namespace PeopleManager.Ui.Mvc.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            var function = await _functionService.GetById(id);
+            var function = await _functionsSdk.GetById(id);
             if (function is null)
             {
                 return RedirectToAction("Index");
@@ -80,7 +81,7 @@ namespace PeopleManager.Ui.Mvc.Controllers
         [Route("[controller]/Delete/{id:int?}")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _functionService.Delete(id);
+            await _functionsSdk.Delete(id);
 
             return RedirectToAction("Index");
         }

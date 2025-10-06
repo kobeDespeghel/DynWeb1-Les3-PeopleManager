@@ -25,11 +25,8 @@ namespace PeopleManager.Services
                     FirstName = p.FirstName,
                     LastName = p.LastName,
                     Email = p.Email,
-                    Function = p.Function == null ? null : new FunctionResult
-                    {
-                        Id = p.Function.Id,
-                        Name = p.Function.Name,
-                    }
+                    FunctionId = p.FunctionId,
+                    FunctionName = p.Function == null ? null : p.Function.Name,
                 })
                 .ToListAsync();
             return people;
@@ -45,12 +42,8 @@ namespace PeopleManager.Services
                     FirstName = p.FirstName,
                     LastName = p.LastName,
                     Email = p.Email,
-                    Function = p.Function == null ? null : new FunctionResult
-                    {
-                        Id = p.Function.Id,
-                        Name = p.Function.Name,
-                        Description = p.Function.Description
-                    }
+                    FunctionId = p.FunctionId,
+                    FunctionName = p.Function == null ? null : p.Function.Name,
                 })
                 .FirstOrDefaultAsync(p => p.Id == id);
             return person;

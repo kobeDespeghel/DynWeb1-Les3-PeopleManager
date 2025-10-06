@@ -1,18 +1,16 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using PeopleManager.Services;
-using PeopleManager.Ui.Mvc.Models;
+using PeopleManager.Sdk;
 
 namespace PeopleManager.Ui.Mvc.Controllers;
 
-public class HomeController(PersonService personService) : Controller
+public class HomeController(PeopleSdk peopleSdk) : Controller
 {
-    private readonly PersonService _personService = personService;
+    private readonly PeopleSdk _peopleSdk = peopleSdk;
 
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        var people = await _personService.Get();
+        var people = await _peopleSdk.Get();
 
         return View(people);
     }
@@ -29,10 +27,10 @@ public class HomeController(PersonService personService) : Controller
         return View();
     }
 
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-    }
+    //[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    //public IActionResult Error()
+    //{
+    //    return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+    //}
     
 }

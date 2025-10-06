@@ -3,6 +3,8 @@ using PeopleManager.Dto.Requests;
 using PeopleManager.Dto.Results;
 using PeopleManager.Model;
 using PeopleManager.Repository;
+using Vives.Services.Model;
+using Vives.Services.Model.Extensions;
 
 namespace PeopleManager.Services
 {
@@ -15,7 +17,7 @@ namespace PeopleManager.Services
             _dbContext = dbContext;
         }
 
-        public async Task<IList<FunctionResult>> Get()
+        public async Task<ServiceResult<IList<FunctionResult>>> Get()
         {
             //var functions = await _dbContext.Functions
             //    .Select(f => new FunctionResult
@@ -35,10 +37,14 @@ namespace PeopleManager.Services
                     NumberOfPeople = f.People.Count
                 });
             var functions = await query.ToListAsync();
-            return functions;
+            //return functions;
+            return new ServiceResult<IList<FunctionResult>>()
+            {
+                Data = functions
+            };
         }
 
-        public async Task<FunctionResult?> GetById(int id)
+        public async Task<ServiceResult<FunctionResult?>> GetById(int id)
         {
             var function = await _dbContext.Functions
                 //same as above = reeaal baadman
@@ -50,14 +56,37 @@ namespace PeopleManager.Services
                     NumberOfPeople = f.People.Count
                 })
                 .FirstOrDefaultAsync(f => f.Id == id);
-            return function;
+
+            if(function == null)
+            {
+                return new ServiceResult<FunctionResult?>().NotFound(entityName: "Function");
+            }
+
+
+            //return function;
+            return new ServiceResult<FunctionResult?>()
+            {
+                Data = function
+            };
         }
 
-        public async Task<FunctionResult?> Create(FunctionRequest request)
+        public async Task<ServiceResult<FunctionResult?>> Create(FunctionRequest request)
         {
             if (string.IsNullOrWhiteSpace(request.Name))
             {
-                return null;
+                return new ServiceResult<FunctionResult?>().Required(nameof(request.Name));
+                //return new ServiceResult<FunctionResult>()
+                //{
+                //    Messages = new List<ServiceMessage>()
+                //    {
+                //        new ServiceMessage()
+                //        {
+                //            Code = "Required",
+                //            Message = $"{nameof(request.Name)} is required",
+                //            Type = ServiceMessageType.Error
+                //        }
+                //    }
+                //};
             }
 
             var newFunction = new Function
@@ -71,10 +100,14 @@ namespace PeopleManager.Services
 
             await _dbContext.SaveChangesAsync();
 
-            return await GetById(newFunction.Id);
+            //return await GetById(newFunction.Id);
+            return new ServiceResult<FunctionResult?>()
+            {
+                Data = await GetById(newFunction.Id)
+            };
         }
 
-        public async Task<FunctionResult?> Update(int id, FunctionRequest request)
+        public async Task<ServiceResult<FunctionResult?>> Update(int id, FunctionRequest request)
         {
             //instead of get to keep the link with the dbcontext
             var function = await _dbContext.Functions
@@ -82,7 +115,7 @@ namespace PeopleManager.Services
 
             if (function == null)
             {
-                return null;
+                return new ServiceResult<FunctionResult?>().NotFound(entityName: "Function");
             }
 
             function.Name = request.Name;
@@ -93,7 +126,7 @@ namespace PeopleManager.Services
             return await GetById(function.Id);
         }
 
-        public async Task Delete(int id)
+        public async Task<ServiceResult> Delete(int id)
         {
             var function = await _dbContext.Functions
                 .FirstOrDefaultAsync(f => f.Id == id);
@@ -104,12 +137,25 @@ namespace PeopleManager.Services
 
             if (function is null)
             {
-                return;
+                return new ServiceResult().AlreadyRemoved();
+                //return new ServiceResult
+                //{
+                //    Messages = new List<ServiceMessage>()
+                //    {
+                //        new ServiceMessage()
+                //        {
+                //            Code = "AlreadyRemoved",
+                //            Message = "Function was already removed",
+                //            Type = ServiceMessageType.Warning
+                //        }
+                //    }
+                //};
             }
 
             _dbContext.Functions.Remove(function);
 
             await _dbContext.SaveChangesAsync();
+            return new ServiceResult();
         }
     }
 }

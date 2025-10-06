@@ -25,6 +25,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PeopleManager.Sdk", "People
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PeopleManager.Dto", "PeopleManager.Dto\PeopleManager.Dto.csproj", "{31398F3E-5383-4C70-8954-CAFDEFCA0D29}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Vives", "Vives", "{B006291B-54F6-473D-AD66-3272097E010B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vives.Services.Model", "Vives.Services.Model\Vives.Services.Model.csproj", "{B1E0B7B1-5E3B-481E-B2FE-C6EB41307EF6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +63,10 @@ Global
 		{31398F3E-5383-4C70-8954-CAFDEFCA0D29}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{31398F3E-5383-4C70-8954-CAFDEFCA0D29}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{31398F3E-5383-4C70-8954-CAFDEFCA0D29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1E0B7B1-5E3B-481E-B2FE-C6EB41307EF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1E0B7B1-5E3B-481E-B2FE-C6EB41307EF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1E0B7B1-5E3B-481E-B2FE-C6EB41307EF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1E0B7B1-5E3B-481E-B2FE-C6EB41307EF6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -71,6 +79,7 @@ Global
 		{F77CF0EA-574D-4935-83FC-1AD935167390} = {DF43FCE9-F1A4-4C24-9FF6-78115E827F60}
 		{1B4A9F74-FA83-49BF-98AC-2ACA7902BC7E} = {DF43FCE9-F1A4-4C24-9FF6-78115E827F60}
 		{31398F3E-5383-4C70-8954-CAFDEFCA0D29} = {DF43FCE9-F1A4-4C24-9FF6-78115E827F60}
+		{B1E0B7B1-5E3B-481E-B2FE-C6EB41307EF6} = {B006291B-54F6-473D-AD66-3272097E010B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {70569209-3549-4BD4-A0C4-796CD31CB3D4}
