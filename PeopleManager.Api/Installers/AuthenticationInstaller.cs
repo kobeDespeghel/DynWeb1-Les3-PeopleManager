@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using PeopleManager.Api.Services;
 using PeopleManager.Api.Settings;
 using System.Text;
 
@@ -15,6 +16,8 @@ namespace PeopleManager.Api.Installers
             {
                 throw new InvalidOperationException($"No {nameof(JwtSettings)} configuration found.");
             }
+
+            builder.Services.AddSingleton(jwtSettings);
 
             builder.Services.AddAuthentication(options =>
             {
@@ -35,6 +38,9 @@ namespace PeopleManager.Api.Installers
                     ValidateLifetime = true,
                 };
             });
+
+            builder.Services.AddScoped<AuthenticationManager>();
+
 
             return builder;
         }

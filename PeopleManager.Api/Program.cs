@@ -11,7 +11,8 @@ builder.InstallRestApi()
     .InstallSwagger()
     .InstallDatabase()
     .InstallServices()
-    .InstallAuthentication();
+    .InstallAuthentication()
+    .InstallIndentity();
 
 var app = builder.Build();
 
