@@ -44,7 +44,7 @@ namespace PeopleManager.Services
             };
         }
 
-        public async Task<ServiceResult<FunctionResult?>> GetById(int id)
+        public async Task<ServiceResult<FunctionResult>> GetById(int id)
         {
             var function = await _dbContext.Functions
                 //same as above = reeaal baadman
@@ -59,22 +59,22 @@ namespace PeopleManager.Services
 
             if(function == null)
             {
-                return new ServiceResult<FunctionResult?>().NotFound(entityName: "Function");
+                return new ServiceResult<FunctionResult>().NotFound(entityName: "Function");
             }
 
 
             //return function;
-            return new ServiceResult<FunctionResult?>()
+            return new ServiceResult<FunctionResult>()
             {
                 Data = function
             };
         }
 
-        public async Task<ServiceResult<FunctionResult?>> Create(FunctionRequest request)
+        public async Task<ServiceResult<FunctionResult>> Create(FunctionRequest request)
         {
             if (string.IsNullOrWhiteSpace(request.Name))
             {
-                return new ServiceResult<FunctionResult?>().Required(nameof(request.Name));
+                return new ServiceResult<FunctionResult>().Required(nameof(request.Name));
                 //return new ServiceResult<FunctionResult>()
                 //{
                 //    Messages = new List<ServiceMessage>()
@@ -100,14 +100,10 @@ namespace PeopleManager.Services
 
             await _dbContext.SaveChangesAsync();
 
-            //return await GetById(newFunction.Id);
-            return new ServiceResult<FunctionResult?>()
-            {
-                Data = await GetById(newFunction.Id)
-            };
+            return await GetById(newFunction.Id);
         }
 
-        public async Task<ServiceResult<FunctionResult?>> Update(int id, FunctionRequest request)
+        public async Task<ServiceResult<FunctionResult>> Update(int id, FunctionRequest request)
         {
             //instead of get to keep the link with the dbcontext
             var function = await _dbContext.Functions
@@ -115,7 +111,7 @@ namespace PeopleManager.Services
 
             if (function == null)
             {
-                return new ServiceResult<FunctionResult?>().NotFound(entityName: "Function");
+                return new ServiceResult<FunctionResult>().NotFound(entityName: "Function");
             }
 
             function.Name = request.Name;

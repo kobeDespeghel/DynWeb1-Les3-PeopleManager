@@ -12,6 +12,7 @@ namespace Vives.Services.Model
         public required string Message { get; set; }
 
         public ServiceMessageType Type { get; set; }
+        public string? PropertyName { get; set; }
 
     }
 }

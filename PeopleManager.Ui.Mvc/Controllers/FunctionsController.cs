@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PeopleManager.Dto.Requests;
 using PeopleManager.Sdk;
+using PeopleManager.Ui.Mvc.Extensions;
 //using PeopleManager.Model;
 //using PeopleManager.Services;
 
@@ -19,8 +20,13 @@ namespace PeopleManager.Ui.Mvc.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var functions = await _functionsSdk.Get();
-            return View(functions);
+            var result = await _functionsSdk.Get();
+            if (!result.IsSuccess)
+            {
+                ModelState.AddServiceMessages(result.Messages);
+                return View();
+            }
+            return View(result.Data);
         }
 
         [HttpGet]
@@ -37,7 +43,13 @@ namespace PeopleManager.Ui.Mvc.Controllers
                 return View(function);
             }
 
-            await _functionsSdk.Create(function);
+            var result = await _functionsSdk.Create(function);
+
+            if (!result.IsSuccess)
+            {
+                ModelState.AddServiceMessages(result.Messages);
+                return View(function);
+            }
 
             return RedirectToAction("Index");
         }
@@ -45,11 +57,27 @@ namespace PeopleManager.Ui.Mvc.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit([FromRoute] int id)
         {
-            var function = await _functionsSdk.GetById(id);
+            var result = await _functionsSdk.GetById(id);
+
+            if (!result.IsSuccess)
+            {
+                ModelState.AddServiceMessages(result.Messages);
+                return RedirectToAction("Index");
+            }
+
+            var function = result.Data;
+
             if (function is null)
             {
                 return RedirectToAction("Index");
             }
+
+            var request = new FunctionRequest
+            {
+                Name = function.Name,
+                Description = function.Description,
+            };
+
             return View(function);
         }
 
@@ -61,7 +89,13 @@ namespace PeopleManager.Ui.Mvc.Controllers
                 return View(function);
             }
 
-            await _functionsSdk.Update(id, function);
+            var result = await _functionsSdk.Update(id, function);
+
+            if (!result.IsSuccess)
+            {
+                ModelState.AddServiceMessages(result.Messages);
+                return View(function);
+            }
 
             return RedirectToAction("Index");
         }
@@ -69,7 +103,16 @@ namespace PeopleManager.Ui.Mvc.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            var function = await _functionsSdk.GetById(id);
+            var result = await _functionsSdk.GetById(id);
+
+            if (!result.IsSuccess)
+            {
+                ModelState.AddServiceMessages(result.Messages);
+                return RedirectToAction("Index");
+            }
+
+            var function = result.Data;
+
             if (function is null)
             {
                 return RedirectToAction("Index");
@@ -81,7 +124,12 @@ namespace PeopleManager.Ui.Mvc.Controllers
         [Route("[controller]/Delete/{id:int?}")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _functionsSdk.Delete(id);
+            var result = await _functionsSdk.Delete(id);
+            if (!result.IsSuccess)
+            {
+                ModelState.AddServiceMessages(result.Messages);
+                return RedirectToAction("Index");
+            }
 
             return RedirectToAction("Index");
         }

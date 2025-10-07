@@ -14,40 +14,56 @@ namespace PeopleManager.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllFunctions()
         {
-            var functions = await functionService.Get();
-            return Ok(functions);
+            var result = await functionService.Get();
+            if (!result.IsSuccess)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
         }
 
         //GET by Id
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
-            var function = await functionService.GetById(id);
-            return Ok(function);
+            var result = await functionService.GetById(id);
+            if (!result.IsSuccess)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
         }
 
         //CREATE
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] FunctionRequest function)
         {
-            var createdFunction = await functionService.Create(function);
-            return Ok(createdFunction);
+            var result = await functionService.Create(function);
+            if (!result.IsSuccess)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
         }
 
         //UPDATE
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Update([FromRoute] int id, [FromBody] FunctionRequest function)
         {
-            var updatedFunction = await functionService.Update(id, function);
-            return Ok(updatedFunction);
+            var result = await functionService.Update(id, function);
+            if (!result.IsSuccess)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
         }
 
         //DELETE
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            await functionService.Delete(id);
-            return Ok();
+            var result = await functionService.Delete(id);
+            return Ok(result);
         }
     }
 }

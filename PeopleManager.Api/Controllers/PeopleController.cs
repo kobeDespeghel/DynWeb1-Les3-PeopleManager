@@ -15,16 +15,24 @@ namespace PeopleManager.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllPeople()
         {
-            var people = await personService.Get();
-            return Ok(people);
+            var result = await personService.Get();
+            if (!result.IsSuccess)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
         }
 
         //GET by Id
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById([FromRoute]int id)
         {
-            var person = await personService.GetById(id);
-            return Ok(person);
+            var result = await personService.GetById(id);
+            if (!result.IsSuccess)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
         }
 
 
@@ -32,8 +40,12 @@ namespace PeopleManager.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] PersonRequest person)
         {
-            var createdPerson = await personService.Create(person);
-            return Ok(createdPerson);
+            var result = await personService.Create(person);
+            if (!result.IsSuccess)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
         }
 
         //UPDATE
@@ -41,16 +53,24 @@ namespace PeopleManager.Api.Controllers
         public async Task<IActionResult> Update([FromRoute] int id, [FromBody] PersonRequest person)
         {
 
-            var updatedPerson = await personService.Update(id, person);
-            return Ok(updatedPerson);
+            var result = await personService.Update(id, person);
+            if (!result.IsSuccess)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
         }
 
         //DELETE
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            await personService.Delete(id);
-            return Ok();
+            var result = await personService.Delete(id);
+            if (!result.IsSuccess)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
         }   
 
 

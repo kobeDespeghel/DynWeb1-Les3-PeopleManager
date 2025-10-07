@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PeopleManager.Dto.Requests;
 using PeopleManager.Sdk;
+using PeopleManager.Ui.Mvc.Extensions;
 
 namespace PeopleManager.Ui.Mvc.Controllers;
 
@@ -21,8 +22,15 @@ public class PeopleController : Controller
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        var people = await _peopleSdk.Get();
-        return View(people);
+        var result = await _peopleSdk.Get();
+
+        if (!result.IsSuccess)
+        {
+            ModelState.AddServiceMessages(result.Messages);
+            return View();
+        }
+
+        return View(result.Data);
     }
 
     [HttpGet]
@@ -38,7 +46,13 @@ public class PeopleController : Controller
         {
             return await CreateView("Create", request);
         }
-        await _peopleSdk.Create(request);
+        var result = await _peopleSdk.Create(request);
+
+        if (!result.IsSuccess)
+        {
+            ModelState.AddServiceMessages(result.Messages);
+            return await CreateView("Create", request);
+        }
 
         return RedirectToAction("Index");
     }
@@ -46,7 +60,15 @@ public class PeopleController : Controller
     [HttpGet]
     public async Task<IActionResult> Edit([FromRoute] int id)
     {
-        var person = await _peopleSdk.GetById(id);
+        var result = await _peopleSdk.GetById(id);
+        if (!result.IsSuccess)
+        {
+            ModelState.AddServiceMessages(result.Messages);
+            return RedirectToAction("Index");
+        }
+
+        var person = result.Data;
+
         if (person is null)
         {
             return RedirectToAction("Index");
@@ -71,7 +93,13 @@ public class PeopleController : Controller
             return await CreateView("Edit", request);
         }
 
-        await _peopleSdk.Update(id, request);
+        var result = await _peopleSdk.Update(id, request);
+
+        if(!result.IsSuccess)
+        {
+            ModelState.AddServiceMessages(result.Messages);
+            return await CreateView("Edit", request);
+        }
 
         return RedirectToAction("Index");
     }
@@ -81,7 +109,15 @@ public class PeopleController : Controller
     [HttpGet]
     public async Task<IActionResult> Delete([FromRoute] int id)
     {
-        var person = await _peopleSdk.GetById(id);
+        var result = await _peopleSdk.GetById(id);
+
+        if (!result.IsSuccess)
+        {
+            ModelState.AddServiceMessages(result.Messages);
+            return RedirectToAction("Index");
+        }
+        var person = result.Data;
+
         if (person is null)
         {
             return RedirectToAction("Index");
@@ -101,8 +137,14 @@ public class PeopleController : Controller
 
     private async Task<IActionResult> CreateView([AspMvcView] string viewName, PersonRequest? request = null)
     {
-        var functions = await _functionsSdk.Get();
-        ViewBag.Functions = functions;
+        var result = await _functionsSdk.Get();
+        if (!result.IsSuccess)
+        {
+            ModelState.AddServiceMessages(result.Messages);
+            return View(viewName, request);
+        }
+
+        ViewBag.Functions = result.Data;
 
         if (request is null)
         {

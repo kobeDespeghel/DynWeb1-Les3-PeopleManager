@@ -66,5 +66,18 @@
 
             return serviceResult;
         }
+
+        public static T NoContent<T>(this T serviceResult)
+            where T : ServiceResult
+        {
+            serviceResult.Messages.Add(
+                new ServiceMessage()
+                {
+                    Code = "Deserialization",
+                    Message = "No response from server",
+                    Type = ServiceMessageType.Error
+                });
+            return serviceResult;
+        }
     }
 }

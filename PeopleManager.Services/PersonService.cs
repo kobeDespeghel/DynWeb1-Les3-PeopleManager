@@ -38,7 +38,7 @@ namespace PeopleManager.Services
             };
         }
 
-        public async Task<ServiceResult<PersonResult?>> GetById(int id)
+        public async Task<ServiceResult<PersonResult>> GetById(int id)
         {
             var person = await _dbContext.People
                 .Include(p => p.Function)
@@ -55,25 +55,25 @@ namespace PeopleManager.Services
 
             if(person == null)
             {
-                return new ServiceResult<PersonResult?>().NotFound(entityName: "Person");
+                return new ServiceResult<PersonResult>().NotFound(entityName: "Person");
             }
 
             //return person;
-            return new ServiceResult<PersonResult?>()
+            return new ServiceResult<PersonResult>()
             {
                 Data = person
             };
         }
 
-        public async Task<ServiceResult<PersonResult?>> Create(PersonRequest request)
+        public async Task<ServiceResult<PersonResult>> Create(PersonRequest request)
         {
             if (string.IsNullOrWhiteSpace(request.FirstName))
             {
-                return new ServiceResult<PersonResult?>().Required(nameof(request.FirstName));
+                return new ServiceResult<PersonResult>().Required(nameof(request.FirstName));
             }
             if (string.IsNullOrWhiteSpace(request.LastName))
             {
-                return new ServiceResult<PersonResult?>().Required(nameof(request.LastName));
+                return new ServiceResult<PersonResult>().Required(nameof(request.LastName));
             }
 
             var newPerson = new Person
@@ -92,14 +92,14 @@ namespace PeopleManager.Services
         }
 
 
-        public async Task<ServiceResult<PersonResult?>> Update(int id, PersonRequest request)
+        public async Task<ServiceResult<PersonResult>> Update(int id, PersonRequest request)
         {
             var person = await _dbContext.People
                 .FirstOrDefaultAsync(p => p.Id == id);
 
             if (person == null)
             {
-                return new ServiceResult<PersonResult?>().NotFound(entityName: "Person");
+                return new ServiceResult<PersonResult>().NotFound(entityName: "Person");
             }
 
             person.FirstName = request.FirstName;

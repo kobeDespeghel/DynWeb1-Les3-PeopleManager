@@ -6,6 +6,8 @@ using System.Linq;
 using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
+using Vives.Services.Model;
+using Vives.Services.Model.Extensions;
 
 namespace PeopleManager.Sdk
 {
@@ -18,33 +20,49 @@ namespace PeopleManager.Sdk
             _httpClient = httpClient;
         }
 
-        public async Task<List<FunctionResult>> Get()
+        public async Task<ServiceResult<List<FunctionResult>>> Get()
         {
-            return await _httpClient.GetFromJsonAsync<List<FunctionResult>>("api/functions") ?? new List<FunctionResult>();
+            var result = await _httpClient.GetFromJsonAsync<ServiceResult<List<FunctionResult>>>("api/functions");
+
+            return result ?? new ServiceResult<List<FunctionResult>>().NoContent();
         }
 
-        public async Task<FunctionResult?> GetById(int id)
+        public async Task<ServiceResult<FunctionResult>> GetById(int id)
         {
-            return await _httpClient.GetFromJsonAsync<FunctionResult>($"api/functions/{id}");
+            var result = await _httpClient.GetFromJsonAsync<ServiceResult<FunctionResult>>($"api/functions/{id}");
+
+            return result ?? new ServiceResult<FunctionResult>().NoContent();
         }
 
-        public async Task<FunctionResult?> Create(FunctionRequest request)
+        public async Task<ServiceResult<FunctionResult>> Create(FunctionRequest request)
         {
             var response = await _httpClient.PostAsJsonAsync("api/functions", request);
             response.EnsureSuccessStatusCode();
-            return await response.Content.ReadFromJsonAsync<FunctionResult>();
+
+            var result = await response.Content.ReadFromJsonAsync<ServiceResult<FunctionResult>>();
+
+            return result ?? new ServiceResult<FunctionResult>().NoContent();
         }
 
-        public async Task<FunctionResult?> Update(int id, FunctionRequest request)
+        public async Task<ServiceResult<FunctionResult>> Update(int id, FunctionRequest request)
         {
             var response = await _httpClient.PutAsJsonAsync($"api/functions/{id}", request);
             response.EnsureSuccessStatusCode();
-            return await response.Content.ReadFromJsonAsync<FunctionResult>();
+
+            var result = await response.Content.ReadFromJsonAsync<ServiceResult<FunctionResult>>();
+
+            return result ?? new ServiceResult<FunctionResult>().NoContent();
+
         }
 
-        public async Task Delete(int id)
+        public async Task<ServiceResult> Delete(int id)
         {
             var response = await _httpClient.DeleteAsync($"api/functions/{id}");
+            response.EnsureSuccessStatusCode();
+
+            var result = await response.Content.ReadFromJsonAsync<ServiceResult<FunctionResult>>();
+
+            return result ?? new ServiceResult<FunctionResult>().NoContent();
         }
     }
 }

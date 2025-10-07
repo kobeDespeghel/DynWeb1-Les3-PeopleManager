@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using PeopleManager.Sdk;
+using PeopleManager.Ui.Mvc.Extensions;
 
 namespace PeopleManager.Ui.Mvc.Controllers;
 
@@ -10,9 +11,14 @@ public class HomeController(PeopleSdk peopleSdk) : Controller
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        var people = await _peopleSdk.Get();
+        var result = await _peopleSdk.Get();
+        if (!result.IsSuccess)
+        {
+            ModelState.AddServiceMessages(result.Messages);
+            return View();
+        }
 
-        return View(people);
+        return View(result.Data);
     }
 
     [HttpGet]
