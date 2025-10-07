@@ -1,26 +1,17 @@
 using Microsoft.EntityFrameworkCore;
+using PeopleManager.Api.Installers;
 using PeopleManager.Repository;
 using PeopleManager.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 
-builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
-builder.Services.AddSwaggerGen();
 
-//var connectionString = builder.Configuration.GetConnectionString(nameof(PeopleManagerDbContext));
-
-builder.Services.AddDbContext<PeopleManagerDbContext>(options =>
-{
-    options.UseInMemoryDatabase(nameof(PeopleManagerDbContext));
-    //options.UseSqlServer(connectionString);
-});
-
-builder.Services.AddScoped<FunctionService>();
-builder.Services.AddScoped<PersonService>();
+builder.InstallRestApi()
+    .InstallSwagger()
+    .InstallDatabase()
+    .InstallServices()
+    .InstallAuthentication();
 
 var app = builder.Build();
 
@@ -41,6 +32,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
