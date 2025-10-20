@@ -25,7 +25,7 @@ namespace PeopleManager.Services
             if (!isPasswordValid)
                 return new ServiceResult<IdentityUser>().LoginFailed();
 
-            return new ServiceResult<IdentityUser>();
+            return new ServiceResult<IdentityUser>(user);
         }
 
 

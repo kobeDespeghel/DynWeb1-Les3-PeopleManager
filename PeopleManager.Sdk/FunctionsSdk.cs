@@ -1,42 +1,34 @@
 ﻿using PeopleManager.Dto.Requests;
 using PeopleManager.Dto.Results;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http.Json;
-using System.Text;
-using System.Threading.Tasks;
+using Vives.Security;
 using Vives.Services.Model;
 using Vives.Services.Model.Extensions;
 
 namespace PeopleManager.Sdk
 {
-    public class FunctionsSdk
+    public class FunctionsSdk(IHttpClientFactory httpClientFactory)
     {
-        private readonly HttpClient _httpClient;
-
-        public FunctionsSdk(HttpClient httpClient)
-        {
-            _httpClient = httpClient;
-        }
+        private readonly HttpClient _httpClient = httpClientFactory.CreateClient("PeopleManagerApi");
+        private readonly string _baseUrl = "api/functions/";
 
         public async Task<ServiceResult<List<FunctionResult>>> Get()
         {
-            var result = await _httpClient.GetFromJsonAsync<ServiceResult<List<FunctionResult>>>("api/functions");
+            var result = await _httpClient.GetFromJsonAsync<ServiceResult<List<FunctionResult>>>(_baseUrl);
 
             return result ?? new ServiceResult<List<FunctionResult>>().NoContent();
         }
 
         public async Task<ServiceResult<FunctionResult>> GetById(int id)
         {
-            var result = await _httpClient.GetFromJsonAsync<ServiceResult<FunctionResult>>($"api/functions/{id}");
+            var result = await _httpClient.GetFromJsonAsync<ServiceResult<FunctionResult>>(_baseUrl + "{id}");
 
             return result ?? new ServiceResult<FunctionResult>().NoContent();
         }
 
         public async Task<ServiceResult<FunctionResult>> Create(FunctionRequest request)
         {
-            var response = await _httpClient.PostAsJsonAsync("api/functions", request);
+            var response = await _httpClient.PostAsJsonAsync(_baseUrl, request);
             response.EnsureSuccessStatusCode();
 
             var result = await response.Content.ReadFromJsonAsync<ServiceResult<FunctionResult>>();
@@ -46,7 +38,7 @@ namespace PeopleManager.Sdk
 
         public async Task<ServiceResult<FunctionResult>> Update(int id, FunctionRequest request)
         {
-            var response = await _httpClient.PutAsJsonAsync($"api/functions/{id}", request);
+            var response = await _httpClient.PutAsJsonAsync(_baseUrl + "{id}", request);
             response.EnsureSuccessStatusCode();
 
             var result = await response.Content.ReadFromJsonAsync<ServiceResult<FunctionResult>>();
@@ -57,7 +49,7 @@ namespace PeopleManager.Sdk
 
         public async Task<ServiceResult> Delete(int id)
         {
-            var response = await _httpClient.DeleteAsync($"api/functions/{id}");
+            var response = await _httpClient.DeleteAsync(_baseUrl + "{id}");
             response.EnsureSuccessStatusCode();
 
             var result = await response.Content.ReadFromJsonAsync<ServiceResult<FunctionResult>>();

@@ -7,7 +7,7 @@ using PeopleManager.Ui.Mvc.Extensions;
 
 namespace PeopleManager.Ui.Mvc.Controllers;
 
-//[Authorize]
+[Authorize]
 public class PeopleController : Controller
 {
     private readonly PeopleSdk _peopleSdk;

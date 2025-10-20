@@ -15,39 +15,36 @@ namespace PeopleManager.Api.Controllers
         [HttpPost("sign-in")]
         public async Task<IActionResult> SignIn([FromBody] SignInRequest request)
         {
-            var result = await identityService.SignIn(request);
-            if(result.IsSuccess || result.Data is null)
+            var serviceResult = await identityService.SignIn(request);
+            var authenticationResult = new AuthenticationResult();
+
+
+            if (!serviceResult.IsSuccess || serviceResult.Data is null)
             {
-                var authenticationResult = new AuthenticationResult();
-                authenticationResult.Messages = result.Messages;
+                authenticationResult.Messages = serviceResult.Messages;
                 return Ok(authenticationResult);
             }
 
-            var token = authenticationManager.GenerateJwtToken(result.Data);
-            return Ok(new AuthenticationResult
-            {
-                Token = token,
-                Messages = result.Messages
-            });
+            var token = authenticationManager.GenerateJwtToken(serviceResult.Data);
+            authenticationResult.Token = token;
+            return Ok(authenticationResult);
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
-            var result = await identityService.Register(request);
-            if (result.IsSuccess || result.Data is null)
+            var serviceResult = await identityService.Register(request);
+            var authenticationResult = new AuthenticationResult();
+
+            if (!serviceResult.IsSuccess || serviceResult.Data is null)
             {
-                var authenticationResult = new AuthenticationResult();
-                authenticationResult.Messages = result.Messages;
+                authenticationResult.Messages = serviceResult.Messages;
                 return Ok(authenticationResult);
             }
 
-            var token = authenticationManager.GenerateJwtToken(result.Data);
-            return Ok(new AuthenticationResult
-            {
-                Token = token,
-                Messages = result.Messages
-            });
+            var token = authenticationManager.GenerateJwtToken(serviceResult.Data);
+            authenticationResult.Token = token;
+            return Ok(authenticationResult);
         }
     }
 }

@@ -20,7 +20,7 @@ namespace PeopleManager.Api.Services
                 Subject = new System.Security.Claims.ClaimsIdentity(new[]
                 {
                     new System.Security.Claims.Claim(JwtRegisteredClaimNames.Sub, user.Id),
-                    new System.Security.Claims.Claim(JwtRegisteredClaimNames.Email, user.Email),
+                    new System.Security.Claims.Claim(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
                     new System.Security.Claims.Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                 }),
                 Expires = DateTime.UtcNow.Add(jwtSettings.ExpiryTime),

@@ -39,7 +39,7 @@ namespace PeopleManager.Repository
 
         private void AddDefaultIdentityUser()
         {
-            var email = "bavo.ketels@vives.be";
+            var email = "kobe.desp@gmail.be";
 
             var identityUser = new IdentityUser();
             identityUser.UserName = email;

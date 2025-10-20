@@ -7,7 +7,7 @@ namespace PeopleManager.Api.Installers
     {
         public static WebApplicationBuilder InstallIndentity(this WebApplicationBuilder builder)
         {
-            builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+            builder.Services.AddIdentityCore<IdentityUser>(options =>
             {
                 options.Password.RequiredLength = 8;
             }).AddEntityFrameworkStores<PeopleManagerDbContext>();

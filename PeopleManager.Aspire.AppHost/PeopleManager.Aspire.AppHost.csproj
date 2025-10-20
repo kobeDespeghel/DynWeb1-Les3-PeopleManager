@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Sdk Name="Aspire.AppHost.Sdk" Version="9.3.1" />
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UserSecretsId>5f00d204-cf61-4b89-b49a-12f1fa87455a</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.AppHost" Version="9.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PeopleManager.Api\PeopleManager.Api.csproj" />
+    <ProjectReference Include="..\PeopleManager.Ui.ConsoleApp\PeopleManager.Ui.ConsoleApp.csproj" />
+    <ProjectReference Include="..\PeopleManager.Ui.Mvc\PeopleManager.Ui.Mvc.csproj" />
+  </ItemGroup>
+
+</Project>

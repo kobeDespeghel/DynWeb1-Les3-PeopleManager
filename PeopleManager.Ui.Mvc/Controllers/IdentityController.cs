@@ -1,108 +1,151 @@
-﻿//using Microsoft.AspNetCore.Authentication;
-//using Microsoft.AspNetCore.Identity;
-//using Microsoft.AspNetCore.Mvc;
-//using PeopleManager.Ui.Mvc.Models;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using PeopleManager.Dto.Requests;
+using PeopleManager.Sdk;
+using PeopleManager.Ui.Mvc.Extensions;
+using PeopleManager.Ui.Mvc.Models;
+using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http;
+using System.Security.Claims;
+using Vives.Security;
 
-//namespace PeopleManager.Ui.Mvc.Controllers
-//{
-//    public class IdentityController : Controller
-//    {
-//        private readonly SignInManager<IdentityUser> _signInManager;
-//        private readonly UserManager<IdentityUser> _userManager;
+namespace PeopleManager.Ui.Mvc.Controllers
+{
+    public class IdentityController(IdentitySdk identitySdk, ITokenStore tokenStore) : Controller
+    {
 
-//        public IdentityController(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager)
-//        {
-//            _signInManager = signInManager;
-//            _userManager = userManager;
-//        }
+        [HttpGet]
+        public async Task<IActionResult> SignIn(string? returnUrl = null)
+        {
+            if (string.IsNullOrWhiteSpace(returnUrl))
+            {
+                returnUrl = "/";
+            }
+            ViewBag.ReturnUrl = returnUrl;
 
-//        [HttpGet]
-//        public async Task<IActionResult> SignIn(string? returnUrl = null)
-//        {
-//            if (string.IsNullOrWhiteSpace(returnUrl))
-//            {
-//                returnUrl = "/";
-//            }
-//            ViewBag.ReturnUrl = returnUrl;
+            await InternalSignOut();
 
-//            // Clear the existing external cookie to ensure a clean login process
-//            //await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
-//            await _signInManager.SignOutAsync();
+            return View();
+        }
 
-//            return View();
-//        }
+        [HttpPost]
+        public async Task<IActionResult> SignIn(SignInModel signInModel, string? returnUrl = null)
+        {
+            if (string.IsNullOrWhiteSpace(returnUrl))
+            {
+                returnUrl = "/";
+            }
+            ViewBag.ReturnUrl = returnUrl;
 
-//        [HttpPost]
-//        public async Task<IActionResult> SignIn(SignInModel signInModel, string? returnUrl = null)
-//        {
-//            if (string.IsNullOrWhiteSpace(returnUrl))
-//            {
-//                returnUrl = "/";
-//            }
-//            ViewBag.ReturnUrl = returnUrl;
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
 
-//            if (!ModelState.IsValid)
-//            {
-//                return View();
-//            }
+            var signInRequest = new SignInRequest
+            {
+                Email = signInModel.Email,
+                Password = signInModel.Password
+            };
 
-//            var result = await _signInManager.PasswordSignInAsync(signInModel.Email, signInModel.Password, signInModel.RememberMe, lockoutOnFailure: false);
-//            if (!result.Succeeded)
-//            {
-//                ModelState.AddModelError("", "Username/Password combination is incorrect.");
-//                return View();
-//            }
+            var signInResult = await identitySdk.SignIn(signInRequest);
 
-//            return LocalRedirect(returnUrl);
-//        }
 
-//        [HttpGet]
-//        public IActionResult Register(string? returnUrl = null)
-//        {
-//            if (string.IsNullOrWhiteSpace(returnUrl))
-//            {
-//                returnUrl = "/";
-//            }
-//            ViewBag.ReturnUrl = returnUrl;
 
-//            return View();
-//        }
+            if (!signInResult.IsSuccess)
+            {
+                ModelState.AddServiceMessages(signInResult.Messages);
+                return View();
+            }
 
-//        [HttpPost]
-//        public async Task<IActionResult> Register(RegisterModel registerModel, string? returnUrl = null)
-//        {
-//            if (string.IsNullOrWhiteSpace(returnUrl))
-//            {
-//                returnUrl = "/";
-//            }
-//            ViewBag.ReturnUrl = returnUrl;
+            await InternalSignIn(signInResult.Token);
 
-//            var identityUser = new IdentityUser(registerModel.Email)
-//            {
-//                Email = registerModel.Email
-//            };
+            return LocalRedirect(returnUrl);
+        }
 
-//            var result = await _userManager.CreateAsync(identityUser, registerModel.Password);
-//            if (!result.Succeeded)
-//            {
-//                foreach (var identityError in result.Errors)
-//                {
-//                    ModelState.AddModelError("", identityError.Description);
-//                }
-//                return View();
-//            }
+        [HttpGet]
+        public IActionResult Register(string? returnUrl = null)
+        {
+            if (string.IsNullOrWhiteSpace(returnUrl))
+            {
+                returnUrl = "/";
+            }
+            ViewBag.ReturnUrl = returnUrl;
 
-//            await _signInManager.SignInAsync(identityUser, false);
+            return View();
+        }
 
-//            return LocalRedirect(returnUrl);
-//        }
+        [HttpPost]
+        public async Task<IActionResult> Register(RegisterModel registerModel, string? returnUrl = null)
+        {
+            if (string.IsNullOrWhiteSpace(returnUrl))
+            {
+                returnUrl = "/";
+            }
+            ViewBag.ReturnUrl = returnUrl;
 
-//        [HttpPost]
-//        public async Task<IActionResult> LogOut()
-//        {
-//            await _signInManager.SignOutAsync();
+            var registerRequest = new RegisterRequest
+            {
+                Email = registerModel.Email,
+                Password = registerModel.Password
+            };
 
-//            return RedirectToAction("Index", "Home");
-//        }
-//    }
-//}
+
+
+            var registerResult = await identitySdk.Register(registerRequest);
+            if (!registerResult.IsSuccess)
+            {
+                ModelState.AddServiceMessages(registerResult.Messages);
+                return View();
+            }
+
+            await InternalSignIn(registerResult.Token);
+
+            return LocalRedirect(returnUrl);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> LogOut()
+        {
+            await InternalSignOut();
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        private async Task InternalSignOut()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            tokenStore.Clear();
+        }
+
+
+        private async Task InternalSignIn(string? token)
+        {
+            if (String.IsNullOrWhiteSpace(token)) return;
+
+            tokenStore.SetToken(token);
+
+            var jwtHandler = new JwtSecurityTokenHandler();
+            var jwtToken = jwtHandler.ReadJwtToken(token.Trim());
+            var claimsList = jwtToken.Claims.ToList();
+
+            var email = jwtToken.Claims
+                .FirstOrDefault(c => c.Type == ClaimTypes.Email || c.Type == "email")
+                ?.Value;
+
+            if(!String.IsNullOrWhiteSpace(email))
+            {
+                claimsList.Add(new Claim(ClaimTypes.Name, email));
+            }
+
+            var identity = new ClaimsIdentity(claimsList, CookieAuthenticationDefaults.AuthenticationScheme);
+            var claimsPrincipal = new ClaimsPrincipal(identity);
+
+            await HttpContext.SignInAsync(claimsPrincipal);
+        }
+    }
+}

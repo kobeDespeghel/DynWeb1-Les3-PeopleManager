@@ -15,6 +15,7 @@ namespace PeopleManager.Api.Controllers
 
         //GET
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAllPeople()
         {
             var result = await personService.Get();

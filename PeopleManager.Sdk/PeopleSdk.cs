@@ -11,18 +11,14 @@ using Vives.Services.Model.Extensions;
 
 namespace PeopleManager.Sdk
 {
-    public class PeopleSdk
+    public class PeopleSdk(IHttpClientFactory httpClientFactory)
     {
-        private readonly HttpClient _httpClient;
-
-        public PeopleSdk(HttpClient httpClient)
-        {
-            _httpClient = httpClient;
-        }
+        private readonly HttpClient _httpClient = httpClientFactory.CreateClient("PeopleManagerApi");
+        private readonly string _baseUrl = "api/people/";
 
         public async Task<ServiceResult<List<PersonResult>>> Get()
         {
-            var result = await _httpClient.GetFromJsonAsync<ServiceResult<List<PersonResult>>>("api/people");
+            var result = await _httpClient.GetFromJsonAsync<ServiceResult<List<PersonResult>>>(_baseUrl);
 
             return result ?? new ServiceResult<List<PersonResult>>().NoContent();
 
@@ -30,14 +26,14 @@ namespace PeopleManager.Sdk
 
         public async Task<ServiceResult<PersonResult>> GetById(int id)
         {
-            var result = await _httpClient.GetFromJsonAsync<ServiceResult<PersonResult>>($"api/people/{id}");
+            var result = await _httpClient.GetFromJsonAsync<ServiceResult<PersonResult>>(_baseUrl + "{id}");
             
             return result ?? new ServiceResult<PersonResult>().NoContent();
         }
 
         public async Task<ServiceResult<PersonResult>> Create(PersonRequest request)
         {
-            var response = await _httpClient.PostAsJsonAsync("api/people", request);
+            var response = await _httpClient.PostAsJsonAsync(_baseUrl, request);
             response.EnsureSuccessStatusCode();
 
             var result = await response.Content.ReadFromJsonAsync<ServiceResult<PersonResult>>();
@@ -47,7 +43,7 @@ namespace PeopleManager.Sdk
 
         public async Task<ServiceResult<PersonResult>> Update(int id, PersonRequest request)
         {
-            var response = await _httpClient.PutAsJsonAsync($"api/people/{id}", request);
+            var response = await _httpClient.PutAsJsonAsync(_baseUrl + "{id}", request);
 
             response.EnsureSuccessStatusCode();
 
@@ -58,7 +54,7 @@ namespace PeopleManager.Sdk
 
         public async Task<ServiceResult> Delete(int id)
         {
-            var response = await _httpClient.DeleteAsync($"api/people/{id}");
+            var response = await _httpClient.DeleteAsync(_baseUrl + "{id}");
 
             response.EnsureSuccessStatusCode();
 

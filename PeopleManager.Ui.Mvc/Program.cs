@@ -1,46 +1,32 @@
 using PeopleManager.Sdk;
+using PeopleManager.Sdk.Extensions;
+using PeopleManager.Ui.Mvc.Settings;
+using PeopleManager.Ui.Mvc.Stores;
+using Vives.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddHttpClient<PeopleSdk>("PeopleManagerApi", (provider, client) =>
+
+var apiSettings = builder.Configuration.GetSection(nameof(ApiSettings)).Get<ApiSettings>();
+if(String.IsNullOrWhiteSpace(apiSettings?.BaseUrl))
 {
-    client.BaseAddress = new Uri("https://localhost:7188/");
-});
+    throw new InvalidOperationException("ApiSettings:BaseUrl is not configured.");
+}
 
-builder.Services.AddHttpClient<FunctionsSdk>("PeopleManagerApi", (provider, client) =>
-{
-    client.BaseAddress = new Uri("https://localhost:7188/");
-});
+builder.Services.InstallApi(apiSettings.BaseUrl);
 
+builder.Services.AddAuthentication()
+    .AddCookie(builder =>
+    {
+        builder.LoginPath = "/Identity/SignIn";
+        builder.AccessDeniedPath = "/Identity/SignIn";
+    });
 
-//var connectionString = builder.Configuration.GetConnectionString(nameof(PeopleManagerDbContext));
-
-//builder.Services.AddDbContext<PeopleManagerDbContext>(options =>
-//{
-//    options.UseInMemoryDatabase(nameof(PeopleManagerDbContext));
-//    //options.UseSqlServer(connectionString);
-//});
-
-//builder.Services.AddDefaultIdentity<IdentityUser>(options =>
-//    {
-//        //options.SignIn.RequireConfirmedAccount = true;
-//    })
-//    .AddEntityFrameworkStores<PeopleManagerDbContext>();
-
-//builder.Services.ConfigureApplicationCookie(options =>
-//{
-//    options.Cookie.HttpOnly = true;
-//    options.LoginPath = "/Identity/SignIn";
-//    options.AccessDeniedPath = "/Identity/SignIn";
-//    options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
-//    options.SlidingExpiration = true;
-//});
-
-//builder.Services.AddScoped<FunctionService>();
-//builder.Services.AddScoped<PersonService>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ITokenStore, TokenStore>();
 
 var app = builder.Build();
 
@@ -51,22 +37,12 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-//else
-//{
-//    using var scope = app.Services.CreateScope();
-
-//    var dbContext = scope.ServiceProvider.GetRequiredService<PeopleManagerDbContext>();
-//    if (dbContext.Database.IsInMemory())
-//    {
-//        dbContext.Seed();
-//    }
-//}
 
 app.UseHttpsRedirection();
 app.UseRouting();
 
 //app.UseAuthentication();
-//app.UseAuthorization();
+app.UseAuthorization();
 
 app.MapStaticAssets();
 

@@ -3,12 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using PeopleManager.Dto.Requests;
 using PeopleManager.Sdk;
 using PeopleManager.Ui.Mvc.Extensions;
-//using PeopleManager.Model;
-//using PeopleManager.Services;
 
 namespace PeopleManager.Ui.Mvc.Controllers
 {
-    //[Authorize]
+    [Authorize]
     public class FunctionsController : Controller
     {
         private readonly FunctionsSdk _functionsSdk;

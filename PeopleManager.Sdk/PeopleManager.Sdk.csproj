@@ -7,7 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.9" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\PeopleManager.Dto\PeopleManager.Dto.csproj" />
+    <ProjectReference Include="..\Vives.Security\Vives.Security.csproj" />
     <ProjectReference Include="..\Vives.Services.Model\Vives.Services.Model.csproj" />
   </ItemGroup>
 
