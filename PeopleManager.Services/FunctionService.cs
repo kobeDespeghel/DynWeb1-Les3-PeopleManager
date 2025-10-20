@@ -17,7 +17,7 @@ namespace PeopleManager.Services
             _dbContext = dbContext;
         }
 
-        public async Task<ServiceResult<IList<FunctionResult>>> Get()
+        public async Task<ServiceResult<IList<FunctionResult>>> Get(string? sorting)
         {
             //var functions = await _dbContext.Functions
             //    .Select(f => new FunctionResult
@@ -28,6 +28,7 @@ namespace PeopleManager.Services
             //        NumberOfPeople = f.People.Count
             //    })
             //    .ToListAsync();
+
             var query = _dbContext.Functions
                 .Select(f => new FunctionResult
                 {
@@ -36,7 +37,11 @@ namespace PeopleManager.Services
                     Description = f.Description,
                     NumberOfPeople = f.People.Count
                 });
-            var functions = await query.ToListAsync();
+
+            var functions = await query
+                .OrderBy(sorting)
+                .ToListAsync();
+
             //return functions;
             return new ServiceResult<IList<FunctionResult>>()
             {

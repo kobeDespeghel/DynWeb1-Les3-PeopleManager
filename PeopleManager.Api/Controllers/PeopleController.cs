@@ -16,9 +16,9 @@ namespace PeopleManager.Api.Controllers
         //GET
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAllPeople()
+        public async Task<IActionResult> GetAllPeople([FromQuery]string? sorting)
         {
-            var result = await personService.Get();
+            var result = await personService.Get(sorting);
             if (!result.IsSuccess)
             {
                 return BadRequest(result);

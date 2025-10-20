@@ -17,7 +17,7 @@ namespace PeopleManager.Services
             _dbContext = dbContext;
         }
 
-        public async Task<ServiceResult<IList<PersonResult>>> Get()
+        public async Task<ServiceResult<IList<PersonResult>>> Get(string? sorting)
         {
             var people = await _dbContext.People
                 .Include(p => p.Function)
@@ -30,6 +30,7 @@ namespace PeopleManager.Services
                     FunctionId = p.FunctionId,
                     FunctionName = p.Function == null ? null : p.Function.Name,
                 })
+                .OrderBy(sorting)
                 .ToListAsync();
             //return people;
             return new ServiceResult<IList<PersonResult>>()

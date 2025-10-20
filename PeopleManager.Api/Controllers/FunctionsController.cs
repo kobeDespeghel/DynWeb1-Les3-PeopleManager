@@ -14,9 +14,9 @@ namespace PeopleManager.Api.Controllers
     {
         //GET
         [HttpGet]
-        public async Task<IActionResult> GetAllFunctions()
+        public async Task<IActionResult> GetAllFunctions([FromQuery]string? sorting)
         {
-            var result = await functionService.Get();
+            var result = await functionService.Get(sorting);
             if (!result.IsSuccess)
             {
                 return BadRequest(result);

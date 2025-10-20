@@ -56,17 +56,30 @@ var tokenStore = serviceProvider.GetRequiredService<ITokenStore>();
 tokenStore.SetToken(authenticationResult.Token ?? string.Empty);
 
 //list people
-var people = await peopleSdk.Get();
+Console.WriteLine();
+Console.WriteLine("=================================");
+Console.WriteLine("PEOPLE");
+Console.WriteLine("=================================");
+Console.WriteLine();
+
+var people = await peopleSdk.Get("FunctionName");
 foreach (var person in people.Data)
 {
-    Console.WriteLine($"{person.Id} - {person.FirstName} {person.LastName}");
+    Console.WriteLine($"{person.Id} - {person.FirstName} {person.LastName} ({person.FunctionName})");
 }
 
 //list functions
-var functions = await functionsSdk.Get();
+Console.WriteLine();
+Console.WriteLine("=================================");
+Console.WriteLine("FUNCTIONS");
+Console.WriteLine("=================================");
+Console.WriteLine();
+
+var functions = await functionsSdk.Get("NumberOfPeople desc");
 foreach (var function in functions.Data)
 {
-    Console.WriteLine($"{function.Id} - {function.Name}");
+    Console.WriteLine($"{function.Id} - {function.Name} ({function.NumberOfPeople})");
 }
 
+Console.WriteLine("=================================");
 Console.ReadLine();
