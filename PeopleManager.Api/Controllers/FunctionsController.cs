@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using PeopleManager.Dto.Requests;
 using PeopleManager.Model;
 using PeopleManager.Services;
+using Vives.Services.Model;
 
 namespace PeopleManager.Api.Controllers
 {
@@ -14,9 +15,9 @@ namespace PeopleManager.Api.Controllers
     {
         //GET
         [HttpGet]
-        public async Task<IActionResult> GetAllFunctions([FromQuery]string? sorting)
+        public async Task<IActionResult> GetAllFunctions([FromQuery]Paging paging, [FromQuery]string? sorting)
         {
-            var result = await functionService.Get(sorting);
+            var result = await functionService.Get(paging, sorting);
             if (!result.IsSuccess)
             {
                 return BadRequest(result);

@@ -17,7 +17,7 @@ namespace PeopleManager.Services
             _dbContext = dbContext;
         }
 
-        public async Task<ServiceResult<IList<FunctionResult>>> Get(string? sorting)
+        public async Task<PagedServiceResult<FunctionResult>> Get(Paging paging, string? sorting)
         {
             //var functions = await _dbContext.Functions
             //    .Select(f => new FunctionResult
@@ -38,14 +38,20 @@ namespace PeopleManager.Services
                     NumberOfPeople = f.People.Count
                 });
 
+            var totalCount = await query.CountAsync();
+
             var functions = await query
                 .OrderBy(sorting)
+                .ApplyPaging(paging)
                 .ToListAsync();
 
             //return functions;
-            return new ServiceResult<IList<FunctionResult>>()
+            return new PagedServiceResult<FunctionResult>()
             {
-                Data = functions
+                Data = functions,
+                TotalCount = totalCount,
+                Paging = paging,
+                Sorting = sorting
             };
         }
 

@@ -17,8 +17,12 @@ namespace PeopleManager.Services
             _dbContext = dbContext;
         }
 
-        public async Task<ServiceResult<IList<PersonResult>>> Get(string? sorting)
+        public async Task<PagedServiceResult<PersonResult>> Get(Paging paging, string? sorting)
         {
+            var query = _dbContext.People.AsNoTracking();
+
+            var totalCount = await query.CountAsync();
+
             var people = await _dbContext.People
                 .Include(p => p.Function)
                 .Select(p => new PersonResult
@@ -31,11 +35,15 @@ namespace PeopleManager.Services
                     FunctionName = p.Function == null ? null : p.Function.Name,
                 })
                 .OrderBy(sorting)
+                .ApplyPaging(paging)
                 .ToListAsync();
             //return people;
-            return new ServiceResult<IList<PersonResult>>()
+            return new PagedServiceResult<PersonResult>()
             {
-                Data = people
+                Data = people,
+                TotalCount = totalCount,
+                Paging = paging,
+                Sorting = sorting
             };
         }
 

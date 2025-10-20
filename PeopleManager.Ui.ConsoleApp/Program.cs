@@ -6,6 +6,7 @@ using PeopleManager.Sdk.Extensions;
 using PeopleManager.Ui.ConsoleApp.Settings;
 using PeopleManager.Ui.ConsoleApp.Stores;
 using Vives.Security;
+using Vives.Services.Model;
 
 
 
@@ -62,10 +63,22 @@ Console.WriteLine("PEOPLE");
 Console.WriteLine("=================================");
 Console.WriteLine();
 
-var people = await peopleSdk.Get("FunctionName");
-foreach (var person in people.Data)
+
+
+var peopleResult = await peopleSdk.Get(new Paging { Offset = 2, Limit = 5 }, "FunctionName, LastName, FirstName");
+if (peopleResult.IsSuccess && peopleResult.Data is not null)
 {
-    Console.WriteLine($"{person.Id} - {person.FirstName} {person.LastName} ({person.FunctionName})");
+    foreach (var person in peopleResult.Data)
+    {
+        Console.WriteLine($"{person.Id} - {person.FirstName} {person.LastName} ({person.FunctionName})");
+    }
+
+    var countMessage =
+        $"Retrieved {peopleResult.Data.Count()} records from {peopleResult.Paging.Limit} requested and a total of {peopleResult.TotalCount}, skipped {peopleResult.Paging.Offset}.";
+
+    Console.WriteLine(countMessage);
+    var sortMessage = $"Sorted by: {peopleResult.Sorting}";
+    Console.WriteLine(sortMessage);
 }
 
 //list functions
@@ -75,10 +88,13 @@ Console.WriteLine("FUNCTIONS");
 Console.WriteLine("=================================");
 Console.WriteLine();
 
-var functions = await functionsSdk.Get("NumberOfPeople desc");
-foreach (var function in functions.Data)
+var functionsResult = await functionsSdk.Get(new Paging(), "NumberOfPeople desc");
+if (functionsResult.IsSuccess || functionsResult.Data is not null)
 {
-    Console.WriteLine($"{function.Id} - {function.Name} ({function.NumberOfPeople})");
+    foreach (var function in functionsResult.Data)
+    {
+        Console.WriteLine($"{function.Id} - {function.Name} ({function.NumberOfPeople})");
+    }
 }
 
 Console.WriteLine("=================================");

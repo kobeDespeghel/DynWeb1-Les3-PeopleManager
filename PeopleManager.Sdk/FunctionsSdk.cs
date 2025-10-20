@@ -12,19 +12,19 @@ namespace PeopleManager.Sdk
         private readonly HttpClient _httpClient = httpClientFactory.CreateClient("PeopleManagerApi");
         private readonly string _baseUrl = "api/functions/";
 
-        public async Task<ServiceResult<List<FunctionResult>>> Get(string? sorting = null)
+        public async Task<PagedServiceResult<FunctionResult>> Get(Paging paging, string? sorting = null)
         {
 
-            var route = _baseUrl;
+            var route = $"{_baseUrl}?offset={paging.Offset}&limit={paging.Limit}";
             if (!String.IsNullOrWhiteSpace(sorting))
             {
-                route = $"{route}?sorting={sorting}";
+                route = $"{route}&sorting={sorting}";
             }
 
 
-            var result = await _httpClient.GetFromJsonAsync<ServiceResult<List<FunctionResult>>>(route);
+            var result = await _httpClient.GetFromJsonAsync<PagedServiceResult<FunctionResult>>(route);
 
-            return result ?? new ServiceResult<List<FunctionResult>>().NoContent();
+            return result ?? new PagedServiceResult<FunctionResult>().NoContent();
         }
 
         public async Task<ServiceResult<FunctionResult>> GetById(int id)
