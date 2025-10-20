@@ -35,6 +35,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PeopleManager.Aspire.AppHos
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PeopleManager.Ui.ConsoleApp", "PeopleManager.Ui.ConsoleApp\PeopleManager.Ui.ConsoleApp.csproj", "{A27D24AA-20A6-432C-8143-D8FE357100F4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vives.AspNetCore.Extensions", "Vives.AspNetCore.Extensions\Vives.AspNetCore.Extensions.csproj", "{025378B4-8218-44DF-B22A-FBE623DCC1B7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -85,6 +87,10 @@ Global
 		{A27D24AA-20A6-432C-8143-D8FE357100F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A27D24AA-20A6-432C-8143-D8FE357100F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A27D24AA-20A6-432C-8143-D8FE357100F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{025378B4-8218-44DF-B22A-FBE623DCC1B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{025378B4-8218-44DF-B22A-FBE623DCC1B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{025378B4-8218-44DF-B22A-FBE623DCC1B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{025378B4-8218-44DF-B22A-FBE623DCC1B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -100,6 +106,7 @@ Global
 		{B1E0B7B1-5E3B-481E-B2FE-C6EB41307EF6} = {B006291B-54F6-473D-AD66-3272097E010B}
 		{D1BBC448-F320-4DFD-9B59-E7DFA47C861B} = {B006291B-54F6-473D-AD66-3272097E010B}
 		{A27D24AA-20A6-432C-8143-D8FE357100F4} = {C3013ED1-DF39-4422-A116-182832D800C9}
+		{025378B4-8218-44DF-B22A-FBE623DCC1B7} = {B006291B-54F6-473D-AD66-3272097E010B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {70569209-3549-4BD4-A0C4-796CD31CB3D4}

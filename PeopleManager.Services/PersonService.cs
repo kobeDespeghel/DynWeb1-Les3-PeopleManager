@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PeopleManager.Dto.Filters;
 using PeopleManager.Dto.Requests;
 using PeopleManager.Dto.Results;
 using PeopleManager.Model;
 using PeopleManager.Repository;
+using PeopleManager.Services.Extensions.Filters;
 using Vives.Services.Model;
 using Vives.Services.Model.Extensions;
 
@@ -17,14 +19,17 @@ namespace PeopleManager.Services
             _dbContext = dbContext;
         }
 
-        public async Task<PagedServiceResult<PersonResult>> Get(Paging paging, string? sorting)
+        public async Task<FilteredPageServiceResult<PersonResult, PersonFilter>> Get(Paging paging, string? sorting, PersonFilter? filter)
         {
-            var query = _dbContext.People.AsNoTracking();
+            var query = _dbContext.People
+                .AsNoTracking()
+                .Include(p => p.Function)
+                .ApplyFilter(filter);
+                
 
             var totalCount = await query.CountAsync();
 
             var people = await _dbContext.People
-                .Include(p => p.Function)
                 .Select(p => new PersonResult
                 {
                     Id = p.Id,
@@ -38,12 +43,13 @@ namespace PeopleManager.Services
                 .ApplyPaging(paging)
                 .ToListAsync();
             //return people;
-            return new PagedServiceResult<PersonResult>()
+            return new FilteredPageServiceResult<PersonResult, PersonFilter>()
             {
                 Data = people,
                 TotalCount = totalCount,
                 Paging = paging,
-                Sorting = sorting
+                Sorting = sorting,
+                Filter = filter
             };
         }
 

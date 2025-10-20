@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PeopleManager.Dto.Filters;
 using PeopleManager.Dto.Requests;
 using PeopleManager.Model;
 using PeopleManager.Services;
@@ -17,9 +18,9 @@ namespace PeopleManager.Api.Controllers
         //GET
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAllPeople([FromQuery]Paging paging, [FromQuery]string? sorting)
+        public async Task<IActionResult> GetAllPeople([FromQuery]Paging paging, [FromQuery]string? sorting, [FromQuery]PersonFilter? filter)
         {
-            var result = await personService.Get(paging, sorting);
+            var result = await personService.Get(paging, sorting, filter);
             if (!result.IsSuccess)
             {
                 return BadRequest(result);

@@ -1,4 +1,5 @@
-﻿using PeopleManager.Dto.Requests;
+﻿using Microsoft.AspNetCore.WebUtilities;
+using PeopleManager.Dto.Requests;
 using PeopleManager.Dto.Results;
 using System;
 using System.Collections.Generic;
@@ -18,10 +19,13 @@ namespace PeopleManager.Sdk
 
         public async Task<PagedServiceResult<PersonResult>> Get(Paging paging, string? sorting = null)
         {
-            var route = $"{_baseUrl}?offset={paging.Offset}&limit={paging.Limit}";
+            //var route = $"{_baseUrl}?offset={paging.Offset}&limit={paging.Limit}";
+            var route = QueryHelpers.AddQueryString(_baseUrl, "offset", paging.Offset.ToString());
+            route = QueryHelpers.AddQueryString(route, "limit", paging.Limit.ToString());
 
             if (!String.IsNullOrWhiteSpace(sorting))
-                route = $"{route}&sorting={sorting}";
+                //route = $"{route}&sorting={sorting}";
+                route = QueryHelpers.AddQueryString(route, "sorting", sorting);
 
             var result = await _httpClient.GetFromJsonAsync<PagedServiceResult<PersonResult>>(route);
 
