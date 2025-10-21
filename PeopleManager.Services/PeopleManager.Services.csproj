@@ -10,6 +10,7 @@
     <ProjectReference Include="..\PeopleManager.Dto\PeopleManager.Dto.csproj" />
     <ProjectReference Include="..\PeopleManager.Model\PeopleManager.Model.csproj" />
     <ProjectReference Include="..\PeopleManager.Repository\PeopleManager.Repository.csproj" />
+    <ProjectReference Include="..\Vives.Security\Vives.Security.csproj" />
     <ProjectReference Include="..\Vives.Services.Model\Vives.Services.Model.csproj" />
   </ItemGroup>
 

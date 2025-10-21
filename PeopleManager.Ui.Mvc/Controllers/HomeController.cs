@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PeopleManager.Sdk;
 using PeopleManager.Ui.Mvc.Extensions;
+using Vives.Services.Model;
 
 namespace PeopleManager.Ui.Mvc.Controllers;
 
@@ -11,7 +12,7 @@ public class HomeController(PeopleSdk peopleSdk) : Controller
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        var result = await _peopleSdk.Get();
+        var result = await _peopleSdk.Get(new Paging());
         if (!result.IsSuccess)
         {
             ModelState.AddServiceMessages(result.Messages);

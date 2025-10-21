@@ -5,6 +5,7 @@ using PeopleManager.Dto.Results;
 using PeopleManager.Model;
 using PeopleManager.Repository;
 using PeopleManager.Services.Extensions.Filters;
+using Vives.Security;
 using Vives.Services.Model;
 using Vives.Services.Model.Extensions;
 
@@ -13,10 +14,12 @@ namespace PeopleManager.Services
     public class PersonService
     {
         private readonly PeopleManagerDbContext _dbContext;
+        private readonly IUserContext<Guid> _userContext;
 
-        public PersonService(PeopleManagerDbContext dbContext)
+        public PersonService(PeopleManagerDbContext dbContext, IUserContext<Guid> userContext)
         {
             _dbContext = dbContext;
+            _userContext = userContext;
         }
 
         public async Task<FilteredPageServiceResult<PersonResult, PersonFilter>> Get(Paging paging, string? sorting, PersonFilter? filter)
@@ -82,14 +85,16 @@ namespace PeopleManager.Services
 
         public async Task<ServiceResult<PersonResult>> Create(PersonRequest request)
         {
+            if(!_userContext.UserId.HasValue)
+                return new ServiceResult<PersonResult>().Unauthorized();
+
+
+
             if (string.IsNullOrWhiteSpace(request.FirstName))
-            {
                 return new ServiceResult<PersonResult>().Required(nameof(request.FirstName));
-            }
+
             if (string.IsNullOrWhiteSpace(request.LastName))
-            {
                 return new ServiceResult<PersonResult>().Required(nameof(request.LastName));
-            }
 
             var newPerson = new Person
             {

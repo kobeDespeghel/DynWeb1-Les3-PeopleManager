@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PeopleManager.Services\PeopleManager.Services.csproj" />
+    <ProjectReference Include="..\Vives.Security\Vives.Security.csproj" />
   </ItemGroup>
 
 </Project>

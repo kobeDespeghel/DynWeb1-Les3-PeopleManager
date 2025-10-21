@@ -79,5 +79,18 @@
                 });
             return serviceResult;
         }
+
+        public static T Unauthorized<T>(this T serviceResult)
+            where T : ServiceResult
+        {
+            serviceResult.Messages.Add(
+                new ServiceMessage()
+                {
+                    Code = "Unauthorized",
+                    Message = "You are not authorized to perform this action",
+                    Type = ServiceMessageType.Error
+                });
+            return serviceResult;
+        }
     }
 }

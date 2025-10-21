@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using PeopleManager.Api.Security;
 using PeopleManager.Repository;
+using Vives.Security;
 
 namespace PeopleManager.Api.Installers
 {
@@ -11,6 +13,9 @@ namespace PeopleManager.Api.Installers
             {
                 options.Password.RequiredLength = 8;
             }).AddEntityFrameworkStores<PeopleManagerDbContext>();
+
+            builder.Services.AddHttpContextAccessor(); 
+            builder.Services.AddScoped<IUserContext<Guid>, HttpContextUserContext>();
 
             return builder;
         }
